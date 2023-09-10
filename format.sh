@@ -22,7 +22,6 @@ num_disks=${#luns[@]}
 for ((i = 0; i < num_disks; i++)); do
     lun="${luns[i]}"
     echo "LUN $i: $lun"
-#    parted /dev/$lun --script mklabel gpt mkpart xfspart xfs 0% 100%
     printf "o\nn\np\n1\n\n\nw\n" |fdisk /dev/$lun
     partprobe /dev/$lun
     mkfs.xfs /dev/${lun}1
