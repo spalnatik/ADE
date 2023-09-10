@@ -67,8 +67,6 @@ check_keyvault_exists() {
     fi
 }
 
-
-
 while true; do
     read -p "Enter the unique keyvault name: " KEYVAULTNAME
     
@@ -156,6 +154,8 @@ for i in $nsg_list
 do
         az network nsg rule create -g $rgname --nsg-name $i -n buildInfraRule --priority 100 --source-address-prefixes $my_pip  --destination-port-ranges 22 --access Allow --protocol Tcp >> $logfile
 done
+
+az vm encryption show --name ${VMNAME} --resource-group ${RGNAME} --query "substatus"
 
 end_time=$(date +"%Y-%m-%d %H:%M:%S")
 
