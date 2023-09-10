@@ -25,9 +25,9 @@ for ((i = 0; i < num_disks; i++)); do
     echo "LUN $i: $lun"
     printf "o\nn\np\n1\n\n\nw\n" |fdisk /dev/$lun
     partprobe /dev/$lun
-    mkfs.$1 /dev/${lun}1
+    mkfs.$ftype /dev/${lun}1
     mkdir /data$((i + 1))
     sudo mount /dev/${lun}1 /data$((i + 1))
     diskuuid="$(blkid -s UUID -o value /dev/${lun}1)"
-    echo "UUID=${diskuuid} /data$((i + 1)) $1 defaults,nofail 0 0" >> /etc/fstab
+    echo "UUID=${diskuuid} /data$((i + 1)) $ftype defaults,nofail 0 0" >> /etc/fstab
 done
