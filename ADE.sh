@@ -6,17 +6,15 @@ echo "Script execution started at: $timestamp"
 
 #set -x
 
-#vmname="ubuntuade"
+
 rgname="dencryption-RG"
 offer="RedHat:RHEL:7_9:latest"
-#KEYVAULTNAME="diskencryptadvault"
 KEYNAME="adekeyfmt"
 STORAGEACCOUNTNAME="diskencryptadediag"
 loc="SouthCentralUS"
 sku_size="Standard_D2s_v3"
 vnetname="dencryption-RG-vnet"
 subnetname="ADE-subnet"
-#Networksecuritygroup="ENCRYPTION-RG-vnet-default-nsg-southcentralus"
 logfile="ADE.log"
 
 # Parse command line arguments
