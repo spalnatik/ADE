@@ -1,6 +1,6 @@
 #!/bin/bash
 
-$ftype=$1
+ftype=$1
 # Initialize an empty array to store LUNs
 luns=()
 
