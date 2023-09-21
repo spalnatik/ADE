@@ -21,7 +21,7 @@ https://learn.microsoft.com/en-us/azure/virtual-machines/linux/disk-encryption-o
 -	If no data disks are declared, it will encrypt only the OS disk. If data disks are declared, it will encrypt both the OS and data disks.
 -	Updating NSGs with public IP and allowing ssh access. 
 
-Script takes approximately 10-15 minutes to deploy the cluster
+
 
 **Tools required to run it:**
 
