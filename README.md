@@ -2,6 +2,10 @@
 
 The script performs the steps outlined in the provided documentation:
 
+Create and encrypt a Linux VM with the Azure CLI
+
+https://learn.microsoft.com/en-us/azure/virtual-machines/linux/disk-encryption-cli-quickstart
+
 Enable Azure Disk Encryption for Linux VMs - Azure Virtual Machines | Microsoft Learn
 
 https://learn.microsoft.com/en-us/azure/virtual-machines/linux/disk-encryption-overview
