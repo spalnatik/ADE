@@ -10,7 +10,6 @@ echo "Script execution started at: $timestamp"
 rgname="Diskencryption-RG"
 offer="RedHat:RHEL:7_9:latest"
 KEYNAME="adekeyfmt"
-STORAGEACCOUNTNAME="diskencryptadediag"
 loc="SouthCentralUS"
 sku_size="Standard_D2s_v3"
 vnetname="Diskencryption-RG-vnet"
@@ -100,10 +99,10 @@ echo "Creating VNET .."
 az network vnet create --name "$vnetname" -g "$rgname" --address-prefixes 10.0.0.0/24 --subnet-name "$subnetname" --subnet-prefixes 10.0.0.0/24 >> "$logfile"
 
 echo "Creating key Vault .."
-az keyvault create --name ${KEYVAULTNAME}  --resource-group ${rgname} --location ${loc} --enabled-for-disk-encryption True --enabled-for-deployment True --enabled-for-template-deployment True -o table
+az keyvault create --name ${KEYVAULTNAME}  --resource-group ${rgname} --location ${loc} --enabled-for-disk-encryption True --enabled-for-deployment True --enabled-for-template-deployment True -o table >> "$logfile"
 
 echo "Creating key .."
-az keyvault key create --vault-name ${KEYVAULTNAME} --name ${KEYNAME} --protection software
+az keyvault key create --vault-name ${KEYVAULTNAME} --name ${KEYNAME} --protection software >> "$logfile"
 fi
 
 echo "Creating ADE VM"
@@ -112,7 +111,7 @@ az vm create -g "$rgname" -n "$vmname" --admin-username "$username" --admin-pass
 
 echo "Enabling boot diagnostics"
 
-az vm boot-diagnostics enable --name "$vmname" --resource-group "$rgname"
+az vm boot-diagnostics enable --name "$vmname" --resource-group "$rgname" >> "$logfile"
 
 if [ $num_disks -gt 0 ]; then
     for ((i=1; i<=num_disks; i++))
@@ -148,10 +147,10 @@ fi
 
 if [ $num_disks -gt 0 ]; then
     echo "encrypting both OS and data disks"
-    az vm encryption enable --resource-group "$rgname" --name "$vmname" --disk-encryption-keyvault "$KEYVAULTNAME" --key-encryption-key "$KEYNAME" --volume-type "ALL" --encrypt-format-all
+    az vm encryption enable --resource-group "$rgname" --name "$vmname" --disk-encryption-keyvault "$KEYVAULTNAME" --key-encryption-key "$KEYNAME" --volume-type "ALL" --encrypt-format-all >> "$logfile"
  else
     echo "encrypting only OS disk "
-    az vm encryption enable --resource-group "$rgname" --name "$vmname" --disk-encryption-keyvault "$KEYVAULTNAME" --key-encryption-key "$KEYNAME" --volume-type "OS"
+    az vm encryption enable --resource-group "$rgname" --name "$vmname" --disk-encryption-keyvault "$KEYVAULTNAME" --key-encryption-key "$KEYNAME" --volume-type "OS" >> "$logfile"
 fi
 
 echo 'Updating NSGs with public IP and allowing ssh access from that IP'
