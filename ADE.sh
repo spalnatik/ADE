@@ -7,13 +7,13 @@ echo "Script execution started at: $timestamp"
 #set -x
 
 
-rgname="dencryption-RG"
+rgname="Diskencryption-RG"
 offer="RedHat:RHEL:7_9:latest"
 KEYNAME="adekeyfmt"
 STORAGEACCOUNTNAME="diskencryptadediag"
 loc="SouthCentralUS"
 sku_size="Standard_D2s_v3"
-vnetname="dencryption-RG-vnet"
+vnetname="Diskencryption-RG-vnet"
 subnetname="ADE-subnet"
 logfile="ADE.log"
 
@@ -160,3 +160,6 @@ az vm encryption show --name ${VMNAME} --resource-group ${RGNAME} --query "subst
 end_time=$(date +"%Y-%m-%d %H:%M:%S")
 
 echo "Script execution completed at: $end_time"
+
+echo "Enter below command to check the encryption status from CLI : 
+az vm encryption show --name $vmname  --resource-group $rgname --query 'substatus'"
