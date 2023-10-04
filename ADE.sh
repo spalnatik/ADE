@@ -49,8 +49,8 @@ function check_resource_group_exists {
 }
 
 if check_resource_group_exists "$rgname"; then
-    	read -p "Enter the unique keyvault name: " KEYVAULTNAME
-	echo "Resource group '$rgname' already exists. Skipping keyvault creation..."
+        read -p "Enter the unique keyvault name: " KEYVAULTNAME
+        echo "Resource group '$rgname' already exists. Skipping keyvault creation..."
 
 else
 # Function to check if the Key Vault name exists (including soft-deleted)
@@ -59,7 +59,7 @@ check_keyvault_exists() {
     local existing_kv
     existing_kv=$(az keyvault list --query "[?name=='$keyvault_name'].name" --output tsv 2>/dev/null)
     soft_deleted_kv=$(az keyvault list-deleted --query "[?name=='$keyvault_name'].name" --output tsv 2>/dev/null)
-    
+
     if [ -n "$existing_kv" ] || [ -n "$soft_deleted_kv" ]; then
         return 0 # Key Vault exists
     else
@@ -69,7 +69,7 @@ check_keyvault_exists() {
 
 while true; do
     read -p "Enter the unique keyvault name: " KEYVAULTNAME
-    
+    echo "Please wait for few seconds to check the status of keyvault"
     if check_keyvault_exists "$KEYVAULTNAME"; then
         echo "Key Vault '$KEYVAULTNAME' already exists or was previously soft-deleted. Please choose a unique name."
     else
@@ -82,7 +82,10 @@ fi
 echo ''
 read -p "Enter the number of disks to attach: " num_disks
 
-read -p "Enter FSType of disks: " ftype
+if [ $num_disks -gt 0 ]; then
+
+    read -p "Enter FSType of disks: " ftype
+fi
 
 echo ""
 date >> "$logfile"
@@ -106,6 +109,10 @@ fi
 echo "Creating ADE VM"
 
 az vm create -g "$rgname" -n "$vmname" --admin-username "$username" --admin-password "$password" --image "$offer" --vnet-name "$vnetname" --subnet "$subnetname" --public-ip-sku Standard --size "$sku_size" >> "$logfile"
+
+echo "Enabling boot diagnostics"
+
+az vm boot-diagnostics enable --name "$vmname" --resource-group "$rgname"
 
 if [ $num_disks -gt 0 ]; then
     for ((i=1; i<=num_disks; i++))
@@ -145,7 +152,7 @@ if [ $num_disks -gt 0 ]; then
  else
     echo "encrypting only OS disk "
     az vm encryption enable --resource-group "$rgname" --name "$vmname" --disk-encryption-keyvault "$KEYVAULTNAME" --key-encryption-key "$KEYNAME" --volume-type "OS"
-fi   
+fi
 
 echo 'Updating NSGs with public IP and allowing ssh access from that IP'
 my_pip=`curl ifconfig.io`
@@ -155,11 +162,11 @@ do
         az network nsg rule create -g $rgname --nsg-name $i -n buildInfraRule --priority 100 --source-address-prefixes $my_pip  --destination-port-ranges 22 --access Allow --protocol Tcp >> $logfile
 done
 
-az vm encryption show --name ${VMNAME} --resource-group ${RGNAME} --query "substatus"
+az vm encryption show --name $vmname --resource-group $rgname --query "substatus"
 
 end_time=$(date +"%Y-%m-%d %H:%M:%S")
 
 echo "Script execution completed at: $end_time"
 
-echo "Enter below command to check the encryption status from CLI : 
+echo "Enter below command to check the encryption status from CLI :
 az vm encryption show --name $vmname  --resource-group $rgname --query 'substatus'"
